@@ -33,11 +33,9 @@ connection.connect(function(err) {
 });
       
 function afterConnection() {
-    // connection.query("select item_id, product_name, department_name, round(price, 2) as price FROM products order by department_name asc", function(err, res) {
-    //   if (err) throw err;
-    //   console.log(res);
-    //   connection.end();
-    // });
+    
+    // connection.end();
+
 }
 
 //----------------BUSINESS LOGIC-----------------------------//
@@ -61,22 +59,22 @@ function purchaseItems() {
         ]).then(function(selectedItem) {
             // Display user's selection
             console.log("You entered item: " + JSON.stringify(selectedItem));
+            // Now call updateItem() to make updates to product if sufficient quantity exists
             updateItem(selectedItem.itemID,selectedItem.Quantity);
-            // updateItem(selectedItem.itemID);
+            
         });
 }
 
 function readAllItems() {
     // console.log("Selecting all items...\n");
-    connection.query("select item_id, product_name, department_name, round(price, 2) as price FROM products order by department_name asc", function(err, res) {
+    connection.query("select item_id, product_name, department_name, round(price, 2) as price, stock_quantity FROM products order by department_name asc", function(err, res) {
         if (err) throw err;
         // Log all results of the SELECT statement
         console.log("\n");
 
         for (var i=0; i < res.length; i++) {
-        console.log(res[i].item_id + " | " + res[i].product_name + " | " + res[i].department_name + " | " + res[i].price);
+        console.log(res[i].item_id + " | " + res[i].product_name + " | " + res[i].department_name + " | " + res[i].price + " | " + res[i].stock_quantity);
         }
-    //   console.log("Items:\n" + JSON.stringify(res));
     });
 }
 
@@ -106,6 +104,8 @@ function updateItem(selectedItemID,selectedItemQuantity) {
 
         if (selectedItemQuantity > fetchedItem[0].stock_quantity) {
             console.log("Sorry, there is insufficient quantity to fill this order.");
+            connection.end();
+            return;
         } else {
 
             var newQuantity = fetchedItem[0].stock_quantity - selectedItemQuantity;
@@ -130,7 +130,7 @@ function updateItem(selectedItemID,selectedItemQuantity) {
         }
         displayTotals(selectedItemID,selectedItemQuantity);
     });
-    // connection.end();
+
 }
 
 // display customer total price - selectedItemQuantity * price
@@ -148,5 +148,5 @@ function displayTotals(selectedItemID,selectedItemQuantity) {
     connection.end();
 }
 
-//   connection.end();
+
     
