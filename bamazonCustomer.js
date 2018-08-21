@@ -1,6 +1,7 @@
 //----------------IMPORT NPM PACKAGES-----------------------------//
 var inquirer = require("inquirer");
 var mysql = require("mysql");
+const cTable = require('console.table');
 
 
 //----------------CREATE MYSQL CONNECTION-----------------------------//
@@ -25,9 +26,6 @@ connection.connect(function(err) {
 
     // Call readAllItems() function
     readAllItems();
-
-    // Call purchaseItems() function
-    purchaseItems();
 
     afterConnection();
 });
@@ -71,10 +69,27 @@ function readAllItems() {
         if (err) throw err;
         // Log all results of the SELECT statement
         console.log("\n");
+        
+        var tableItems = [];
 
         for (var i=0; i < res.length; i++) {
-        console.log(res[i].item_id + " | " + res[i].product_name + " | " + res[i].department_name + " | " + res[i].price + " | " + res[i].stock_quantity);
+            tableItems.push(
+                {
+                ID: res[i].item_id,
+                Product_Name: res[i].product_name,
+                Department: res[i].department_name,
+                Price: res[i].price,
+                Quantity: res[i].stock_quantity
+                }
+            );
         }
+        console.log(tableItems);
+        const table = cTable.getTable(tableItems);
+        console.log(table);
+        
+        // Call purchaseItems() function
+        purchaseItems();
+
     });
 }
 
@@ -83,32 +98,20 @@ function updateItem(selectedItemID,selectedItemQuantity) {
     console.log("selectedItemID: " + selectedItemID);
     connection.query("select item_id, product_name, department_name, round(price, 2) as price, stock_quantity FROM products where item_id = ?",[selectedItemID], function(err, res) {
         if (err) throw err;
-        var fetchedItem = res;
-        console.log(res);
-        // console.log("fetchedItem: " + fetchedItem);
-        console.log("Checking quantity for your item...");
-        // I do not want a for loop here...I have only 1 item...I want to convert it to an object so that I can access it using dot notation
-
-        // var fetchedItemObj = {};
-        // fetchedItem.forEach(function(data){
-        //     fetchedItemObj[data[0]] = data[1];
-        // });
-
-        // console.log(fetchedItemObj.item_id + " | " + fetchedItemObj.product_name + " | " + fetchedItemObj.department_name + " | " + fetchedItemObj.price + " | " + fetchedItemObj.stock_quantity);
+        var fetchedItem = res[0];
+        console.log("res: " + res[0]);
         
-        // console.log(res.item_id + " | " + res.product_name + " | " + res.department_name + " | " + res.price + " | " + res.stock_quantity);
+        console.log("Checking quantity for your item...");
+       
+        console.log(fetchedItem.item_id + " | " + fetchedItem.product_name + " | " + fetchedItem.department_name + " | " + fetchedItem.price + " | " + fetchedItem.stock_quantity);
 
-        for (var i=0; i < fetchedItem.length; i++) {
-            console.log(fetchedItem[i].item_id + " | " + fetchedItem[i].product_name + " | " + fetchedItem[i].department_name + " | " + fetchedItem[i].price + " | " + fetchedItem[i].stock_quantity);
-            }
-
-        if (selectedItemQuantity > fetchedItem[0].stock_quantity) {
+        if (selectedItemQuantity > fetchedItem.stock_quantity) {
             console.log("Sorry, there is insufficient quantity to fill this order.");
             connection.end();
             return;
         } else {
 
-            var newQuantity = fetchedItem[0].stock_quantity - selectedItemQuantity;
+            var newQuantity = fetchedItem.stock_quantity - selectedItemQuantity;
             console.log("newQuantity: " + newQuantity);
             console.log("selectedItemID: " + selectedItemID);
             console.log("Updating stock_quantity...\n");
