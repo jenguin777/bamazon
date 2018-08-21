@@ -4,7 +4,7 @@ An Amazon-like storefront -  Node.js and MySQL
 The app will take in orders from customers and deplete stock from the store's inventory.
 
 # Technologies used
-* Node.js
+* Node.js (inquirer, mysql, console.table packages)
 * MySQL
 * Javascript
 

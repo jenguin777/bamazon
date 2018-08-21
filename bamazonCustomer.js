@@ -64,14 +64,16 @@ function purchaseItems() {
 }
 
 function readAllItems() {
-    // console.log("Selecting all items...\n");
+    console.log("Welcome to Bamazon! Here's a list of items currently for sale!");
+    // Fetch all products from the bamazon database
     connection.query("select item_id, product_name, department_name, round(price, 2) as price, stock_quantity FROM products order by department_name asc", function(err, res) {
         if (err) throw err;
-        // Log all results of the SELECT statement
+        
         console.log("\n");
         
         var tableItems = [];
 
+        // Loop through all of the products and push them into the tableItems array
         for (var i=0; i < res.length; i++) {
             tableItems.push(
                 {
@@ -83,7 +85,8 @@ function readAllItems() {
                 }
             );
         }
-        console.log(tableItems);
+        
+        // Use console.table npm package to format and display products
         const table = cTable.getTable(tableItems);
         console.log(table);
         
@@ -95,15 +98,19 @@ function readAllItems() {
 
 // Check quantity for the selected item. If sufficient quantity, decrement quantity in the database, else display insufficient quantity message
 function updateItem(selectedItemID,selectedItemQuantity) {
-    console.log("selectedItemID: " + selectedItemID);
+    
+    // Fetch the selected item from the bamazon database
     connection.query("select item_id, product_name, department_name, round(price, 2) as price, stock_quantity FROM products where item_id = ?",[selectedItemID], function(err, res) {
         if (err) throw err;
         var fetchedItem = res[0];
-        console.log("res: " + res[0]);
         
         console.log("Checking quantity for your item...");
-       
-        console.log(fetchedItem.item_id + " | " + fetchedItem.product_name + " | " + fetchedItem.department_name + " | " + fetchedItem.price + " | " + fetchedItem.stock_quantity);
+            
+        // use console.table method to format and display fetchedItem
+        const table = cTable.getTable(fetchedItem);
+        console.log(table);
+
+        // console.log(fetchedItem.item_id + " | " + fetchedItem.product_name + " | " + fetchedItem.department_name + " | " + fetchedItem.price + " | " + fetchedItem.stock_quantity);
 
         if (selectedItemQuantity > fetchedItem.stock_quantity) {
             console.log("Sorry, there is insufficient quantity to fill this order.");
@@ -112,9 +119,7 @@ function updateItem(selectedItemID,selectedItemQuantity) {
         } else {
 
             var newQuantity = fetchedItem.stock_quantity - selectedItemQuantity;
-            console.log("newQuantity: " + newQuantity);
-            console.log("selectedItemID: " + selectedItemID);
-            console.log("Updating stock_quantity...\n");
+            console.log("Updating product's stock_quantity...\n");
             var query = connection.query(
               "UPDATE products SET ? WHERE ?",
               [
@@ -134,19 +139,19 @@ function updateItem(selectedItemID,selectedItemQuantity) {
         displayTotals(selectedItemID,selectedItemQuantity);
     });
 
+    
 }
 
 // display customer total price - selectedItemQuantity * price
 function displayTotals(selectedItemID,selectedItemQuantity) {
-    connection.query("select item_id, product_name, department_name, round(price, 2) as price FROM products where item_id = ?", [selectedItemID], function(err, res) {
+    connection.query("select item_id, product_name, department_name, round(price, 2) as price, stock_quantity FROM products where item_id = ?", [selectedItemID], function(err, item) {
         if (err) throw err;
-        var purchasedItem = res;
-        // console.log(res);
+        var purchasedItem = item[0];
 
-        for (var i=0; i < res.length; i++) {
-        var totalPrice = selectedItemQuantity * res[i].price;
+        var totalPrice = selectedItemQuantity * purchasedItem.price;
         console.log("The total price for your purchase is: " + totalPrice);
-        }
+        console.log("The new stock_quantity for the item you purchased is: " + purchasedItem.stock_quantity);
+
     });
     connection.end();
 }
