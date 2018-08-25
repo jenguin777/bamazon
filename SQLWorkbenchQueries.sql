@@ -58,4 +58,6 @@ select item_id, product_name, department_name, round(price, 2) as price FROM pro
 
 use bamazon;
 
-select item_id, product_name, department_name, round(price, 2) as price, stock_quantity FROM products where item_id = 1;
+select item_id, product_name, department_name, round(price, 2) as price, stock_quantity FROM products where item_id = 10;
+
+-- UPDATE products SET stock_quantity = 11 WHERE item_id = 1;

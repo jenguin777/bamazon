@@ -58,5 +58,7 @@ select * FROM products order by department_name asc, product_name asc;
 
 select item_id, product_name, department_name, round(price, 2) as price, stock_quantity FROM products where item_id = 1;
 
+select item_id, product_name, department_name, round(price, 2) as price, stock_quantity FROM products where stock_quantity < 5 order by department_name asc;
+
 -- UPDATE products SET stock_quantity = 11 WHERE item_id = 1;
 

@@ -3,7 +3,7 @@ var inquirer = require("inquirer");
 var mysql = require("mysql");
 const cTable = require('console.table');
 
-
+var tableItems = [];
 //----------------CREATE MYSQL CONNECTION-----------------------------//
 var connection = mysql.createConnection({
     host: "localhost",
@@ -24,18 +24,12 @@ connection.connect(function(err) {
     if (err) throw err;
     console.log("connected as id " + connection.threadId);
 
+    useBamazonDB();
+
     // Call readAllItems() function
     readAllItems();
-
-    afterConnection();
 });
       
-function afterConnection() {
-    
-    // connection.end();
-
-}
-
 //----------------BUSINESS LOGIC-----------------------------//
 
 function purchaseItems() {
@@ -53,25 +47,32 @@ function purchaseItems() {
             message: "Enter the quantity of this item you wish to purchase from this list."
         }
       
-        // After the prompt, store the user's responses in variables: newItem, category, startingBid
-        ]).then(function(selectedItem) {
-            // Display user's selection
-            console.log("You entered item: " + JSON.stringify(selectedItem));
-            // Now call updateItem() to make updates to product if sufficient quantity exists
-            updateItem(selectedItem.itemID,selectedItem.Quantity);
-            
-        });
+    // After the prompt, store the user's responses in variables: newItem, category, startingBid
+    ]).then(function(selectedItem) {
+        // Display user's selection
+        console.log("You entered item: " + JSON.stringify(selectedItem));
+        // Now call updateItem() to make updates to product if sufficient quantity exists
+        updateItem(selectedItem.itemID,selectedItem.Quantity);
+        
+    });
 }
+
+function useBamazonDB() {
+    connection.query("use bamazon;", function(err, res) {
+        if (err) throw err;
+        // console.log("Using bamazon...");
+    });
+}
+
+
 
 function readAllItems() {
     console.log("Welcome to Bamazon! Here's a list of items currently for sale!");
-    // Fetch all products from the bamazon database
+    // Fetch all products from the bamazon database, round price to 2 digits of precision
     connection.query("select item_id, product_name, department_name, round(price, 2) as price, stock_quantity FROM products order by department_name asc", function(err, res) {
         if (err) throw err;
         
         console.log("\n");
-        
-        var tableItems = [];
 
         // Loop through all of the products and push them into the tableItems array
         for (var i=0; i < res.length; i++) {
@@ -110,8 +111,6 @@ function updateItem(selectedItemID,selectedItemQuantity) {
         const table = cTable.getTable(fetchedItem);
         console.log(table);
 
-        // console.log(fetchedItem.item_id + " | " + fetchedItem.product_name + " | " + fetchedItem.department_name + " | " + fetchedItem.price + " | " + fetchedItem.stock_quantity);
-
         if (selectedItemQuantity > fetchedItem.stock_quantity) {
             console.log("Sorry, there is insufficient quantity to fill this order.");
             connection.end();
@@ -137,9 +136,7 @@ function updateItem(selectedItemID,selectedItemQuantity) {
             console.log("order filled");
         }
         displayTotals(selectedItemID,selectedItemQuantity);
-    });
-
-    
+    });  
 }
 
 // display customer total price - selectedItemQuantity * price
@@ -155,6 +152,3 @@ function displayTotals(selectedItemID,selectedItemQuantity) {
     });
     connection.end();
 }
-
-
-    
