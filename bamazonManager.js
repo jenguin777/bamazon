@@ -94,7 +94,7 @@ function viewProducts() {
 
         printTable(res);
     });
-    // startMenu();
+    startMenu();
 }
 
 function lowInventory() {
@@ -174,26 +174,28 @@ function insertItem(item) {
             // connection.end();
         }
     );
+    viewProducts();
 }
 
 function addInventory() {
 
     connection.query("select item_id, product_name, stock_quantity FROM products order by product_name asc", function(err, results) {
-        console.log(results);
+        console.log("-----results: " + JSON.stringify(results));
         if (err) throw err;
         // fetch all products, then ask user which item they want to update quantity for
         inquirer.prompt([
             {
-            name: "choice",
-            type: "rawlist",
-            choices: function() {
-                var choiceArray = [];
-                for (var i = 0; i < results.length; i++) {
-                choiceArray.push(results[i].item_name);
-                }
-                return choiceArray;
-            },
-            message: "Select the product you wish to add inventory for."
+                name: "choice",
+                type: "rawlist",            
+                choices: function() {
+                    var choiceArray = [];
+                    for (var i = 0; i < results.length; i++) {
+                    choiceArray.push(results[i]);
+                    }
+                    console.log("-----choiceArray: " + JSON.stringify(choiceArray));
+                    return choiceArray;
+                },
+                message: "Select the product you wish to add inventory for."
             },
             {
                 type: "input",
@@ -201,6 +203,7 @@ function addInventory() {
                 message: "Enter the quantity you wish to add for this product:"
             }
         ]).then(function(answer) {
+    
             // get the information of the chosen item
             var chosenItem;
             var newQuantity;
@@ -251,6 +254,10 @@ function printTable(items) {
     const table = managerTables.getTable(tableItemsArray);
     console.log(table);
     console.log("\n");
-    // connection.end();
-    // startMenu();
+    // console.log("-----End of products, returning to main menu");
+    // Need to clear out the table variable so that it's cleared out for the next time the method is called - table = []; doesn't work
+    
+    // This is not how I wanted to end the program. I tried added startMenu() but it would just keep appending the single table with all table results each time this function was called. I couldn't figure out why.
+    connection.end();
+    process.exit(0);
 }
