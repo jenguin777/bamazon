@@ -66,11 +66,11 @@ function startMenu() {
                 break;
             
             case "Add to Inventory":
-                console.log("You selected Add to Inventory");
+                addInventory();
                 break;
-            
+
             case "Add New Product":
-                console.log("You selected Add New Product");
+                addNewProduct();
                 break;
 
             case "Quit":
@@ -94,7 +94,7 @@ function viewProducts() {
 
         printTable(res);
     });
-    startMenu();
+    // startMenu();
 }
 
 function lowInventory() {
@@ -109,7 +109,72 @@ function lowInventory() {
 
         printTable(results);
     });
-    startMenu();
+    // startMenu();
+}
+
+function addNewProduct() {
+
+    // Prompt the user to provide item information.
+    inquirer.prompt([
+
+    {
+        type: "input",
+        name: "productName",
+        message: "What is the name of your product?"
+    },
+    {
+        type: "list",
+        message: "Which department is your item for?",
+        choices: ["Books", "Computers", "Electronics", "Housewares", "Sports and Outdoors"],
+        name: "department"
+    },
+    {
+        type: "input",
+        name: "price",
+        message: "Enter the price of your item:"
+    },
+    {
+        type: "input",
+        name: "quantity",
+        message: "Enter the quantity of your item:"
+    }
+    
+  
+    // After the prompt, pass in item to insertItem(), then call it
+    ]).then(function(item) {
+
+        insertItem(item);
+
+    });
+}
+
+function insertItem(item) {
+
+    // Now store the new product in the bamazon database
+    console.log("Inserting a new product...\n");
+    var newItem = item.productName;
+    console.log(newItem);
+    var department = item.department;
+    console.log(department);
+    var price = item.price;
+    console.log(price);
+    var quantity = item.quantity;
+    console.log(quantity);
+    var query = connection.query(
+    "INSERT INTO products SET ?",
+        {
+            product_name: newItem,
+            department_name: department,
+            price : price,
+            stock_quantity: quantity
+        },
+        function(err, res) {
+            // console.log(res.affectedRows + " product inserted!\n");
+            console.log("item inserted!\n");
+            // connection.end();
+        }
+    );
+
 }
 
 function printTable(items) {
@@ -129,6 +194,7 @@ function printTable(items) {
     // Use console.table npm package to format and display products
     const table = managerTables.getTable(tableItemsArray);
     console.log(table);
-
-    startMenu();
+    console.log("\n");
+    // connection.end();
+    // startMenu();
 }
