@@ -39,12 +39,12 @@ function purchaseItems() {
         {
             type: "input",
             name: "itemID",
-            message: "Enter the id of the item you wish to purchase from this list."
+            message: "Enter the id of the item you wish to purchase."
         },
         {
             type: "input",
             name: "Quantity",
-            message: "Enter the quantity of this item you wish to purchase from this list."
+            message: "Enter the quantity of the item you wish to purchase."
         }
       
     // After the prompt, store the user's responses in variables: newItem, category, startingBid

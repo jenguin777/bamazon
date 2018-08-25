@@ -174,7 +174,63 @@ function insertItem(item) {
             // connection.end();
         }
     );
+}
 
+function addInventory() {
+
+    connection.query("select item_id, product_name, stock_quantity FROM products order by product_name asc", function(err, results) {
+        console.log(results);
+        if (err) throw err;
+        // fetch all products, then ask user which item they want to update quantity for
+        inquirer.prompt([
+            {
+            name: "choice",
+            type: "rawlist",
+            choices: function() {
+                var choiceArray = [];
+                for (var i = 0; i < results.length; i++) {
+                choiceArray.push(results[i].item_name);
+                }
+                return choiceArray;
+            },
+            message: "Select the product you wish to add inventory for."
+            },
+            {
+                type: "input",
+                name: "addAmount",
+                message: "Enter the quantity you wish to add for this product:"
+            }
+        ]).then(function(answer) {
+            // get the information of the chosen item
+            var chosenItem;
+            var newQuantity;
+            for (var i = 0; i < results.length; i++) {
+                if (results[i].item_name === answer.choice) {
+                    chosenItem = results[i];
+                    console.log("chosenItem: " + chosenItem);
+                    newQuantity = chosenItem.stock_quantity + answer.addAmount;
+                    console.log("newQuantity: " + newQuantity);
+                }
+            }
+        });
+            
+        connection.query(
+            "UPDATE products SET ? WHERE ?",
+            [
+                {
+                stock_quantity: newQuantity
+                },
+                {
+                item_id: chosenItem.item_id
+                }
+            ],
+            function(error) {
+                if (error) throw err;
+                console.log("Quantity updated successfully!");
+
+        });
+        
+    });
 }
 
 function printTable(items) {
