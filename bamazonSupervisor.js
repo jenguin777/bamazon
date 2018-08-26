@@ -1,4 +1,10 @@
+//----------------ENVIRONMENT CONFIG---------------------------------//
+
+// read and set any environment variables defined per .env and dbkeys.js - used with the "dotenv" npm package
+var keys = require("./dbkeys.js");
+
 //----------------IMPORT NPM PACKAGES---------------------------------//
+var getEnv = require("dotenv").config();
 var inquirer = require("inquirer");
 var mysql = require("mysql");
 const supervisorTables = require("console.table");
@@ -9,6 +15,20 @@ var supervisorTableItemsArray = [];
 var productSalesArray = [];
 
 //----------------CREATE MYSQL CONNECTION-----------------------------//
+     
+// var connection = mysql.createConnection({
+//     host: keys.connectDatabase.host,
+    
+//     // Your port; if not 3306
+//     port: keys.connectDatabase.port,
+    
+//     // Your username
+//     user: keys.connectDatabase.user,
+    
+//     // Your password
+//     password: keys.connectDatabase.password,
+//     database: keys.connectDatabase.database
+// });
 
 var connection = mysql.createConnection({
     host: "localhost",
@@ -23,6 +43,7 @@ var connection = mysql.createConnection({
     password: "Grape777!",
     database: "bamazon"
 });
+
       
 // Now connect to the database
 connection.connect(function(err) {
@@ -190,7 +211,7 @@ function viewProductSalesByDepartment() {
         const productSalesTable = supervisorTables.getTable(productSalesArray);
         console.log(productSalesTable);
         console.log("\n");
-        startMenu()
+        startMenu();
     });
     
 }

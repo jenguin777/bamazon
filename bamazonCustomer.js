@@ -1,10 +1,37 @@
-//----------------IMPORT NPM PACKAGES-----------------------------//
+//----------------ENVIRONMENT CONFIG---------------------------------//
+
+// read and set any environment variables defined per .env and dbkeys.js - used with the "dotenv" npm package
+var dbkeys = require("./dbkeys.js");
+
+//----------------IMPORT NPM PACKAGES---------------------------------//
+require("dotenv").config();
 var inquirer = require("inquirer");
 var mysql = require("mysql");
 const cTable = require('console.table');
 
+//----------------GLOBAL VARIABLES------------------------------------//
+
 var tableItems = [];
+
 //----------------CREATE MYSQL CONNECTION-----------------------------//
+// console.log("Keys test " + JSON.stringify(dbkeys));
+
+var connection = mysql.createConnection(dbkeys.accessDatabase);
+
+// var connection = mysql.createConnection({
+//     host: dbkeys.connectDatabase.host,
+    
+//     // Your port; if not 3306
+//     port: dbkeys.connectDatabase.port,
+    
+//     // Your username
+//     user: dbkeys.connectDatabase.user,
+    
+//     // Your password
+//     password: dbkeys.connectDatabase.password,
+//     database: dbkeys.connectDatabase.database
+// });
+
 var connection = mysql.createConnection({
     host: "localhost",
     
@@ -18,9 +45,11 @@ var connection = mysql.createConnection({
     password: "Grape777!",
     database: "bamazon"
 });
-      
+
+
 // Now connect to the database
 connection.connect(function(err) {
+    // console.log("Keys test " + JSON.stringify(dbkeys));
     if (err) throw err;
     console.log("connected as id " + connection.threadId);
 
@@ -157,7 +186,7 @@ function displayTotals(selectedItemID,selectedItemQuantity) {
         var purchasedItem = item[0];
 
         var totalPrice = selectedItemQuantity * purchasedItem.price;
-        console.log("The total price for your purchase is: " + totalPrice.toPrecision(2));
+        console.log("The total price for your purchase is: " + totalPrice);
         console.log("The new stock_quantity for the item you purchased is: " + purchasedItem.stock_quantity);
 
     });
