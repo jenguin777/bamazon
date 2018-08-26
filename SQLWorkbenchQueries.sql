@@ -1,3 +1,5 @@
+-- bamazonCustomer.js and bamazonManager.js
+
 ALTER USER 'root'@'localhost' IDENTIFIED WITH mysql_native_password BY 'Grape777!'
 
 drop database if exists bamazon;
@@ -56,8 +58,51 @@ use bamazon;
 
 select item_id, product_name, department_name, round(price, 2) as price FROM products order by department_name asc;
 
-use bamazon;
-
 select item_id, product_name, department_name, round(price, 2) as price, stock_quantity FROM products where item_id = 10;
 
 -- UPDATE products SET stock_quantity = 11 WHERE item_id = 1;
+
+
+select item_id, product_name, department_name, round(price, 2) as price, stock_quantity FROM products order by department_name asc;
+
+use bamazon;
+
+select item_id, product_name, stock_quantity FROM products order by department_name asc;
+
+select item_id, product_name, stock_quantity FROM products order by product_name asc;
+
+-- delete from products where item_id = 14;
+
+-- bamazonSupervisor.js
+
+use bamazon;
+
+CREATE TABLE departments (
+  department_id INT NOT NULL AUTO_INCREMENT,
+  department_name VARCHAR(255) NOT NULL,
+  overhead_costs Decimal(19,4) default 0,
+  PRIMARY KEY (department_id)
+);
+
+insert into departments (department_name, overhead_costs)
+values ("Sports and Outdoors", 5000.00);
+
+insert into departments (department_name, overhead_costs)
+values ("Books", 3000.00);
+
+insert into departments (department_name, overhead_costs)
+values ("Computers", 10000.00);
+
+insert into departments (department_name, overhead_costs)
+values ("Electronics", 8000.00);
+
+insert into departments (department_name, overhead_costs)
+values ("Housewares", 6000.00);
+
+select department_id, department_name, round(overhead_costs, 2) as overheadCosts from departments order by department_name asc;
+
+-- add product_sales column to products table
+-- alter table products
+-- add column product_sales Decimal(19,4) default 0;
+
+select * from products;
