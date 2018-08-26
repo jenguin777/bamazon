@@ -6,6 +6,7 @@ const supervisorTables = require("console.table");
 //----------------GLOBAL VARIABLES------------------------------------//
 
 var supervisorTableItemsArray = [];
+var productSalesArray = [];
 
 //----------------CREATE MYSQL CONNECTION-----------------------------//
 
@@ -52,22 +53,21 @@ function startMenu() {
             name: "menuChoices",
             type: "list",
             message: "Welcome to Bamazon Supervisor View - please select a menu option:",
-            choices: ["View Sales by Department", "View Departments", "Create New Department", "Quit"]
+            choices: ["View Product Sales by Department", "View Departments", "Add New Department", "Quit"]
         }
 
     ]).then(function(response) {
         switch (response.menuChoices) {
-            case "View Sales by Department":
-                // viewSalesByProduct();
-                console.log("call viewSalesByProduct() function");
+            case "View Product Sales by Department":
+                viewProductSalesByDepartment();
                 break;
 
             case "View Departments":
                 viewDepartments();
                 break;
         
-            case "Create New Department":
-                addDepartment();
+            case "Add New Department":
+                addNewDepartment();
                 break;
 
             case "Quit":
@@ -77,8 +77,6 @@ function startMenu() {
     });
     
 }
-
-
 
 function viewDepartments() {
     console.log("Here's a list of departments");
@@ -91,24 +89,6 @@ function viewDepartments() {
         var result = res;
 
         printSupervisorTable(result);
-
-        // // Loop through all of the departments and push them into the supervisorTableItems array
-        // for (var i=0; i < res.length; i++) {
-        //     supervisorTableItemsArray.push(
-        //         {
-        //         deptID: res[i].department_id,
-        //         dept_Name: res[i].department_name,
-        //         costs: res[i].overhead_costs
-        //         }
-        //     );
-        // }
-        
-        // // Use console.table npm package to format and display products
-        // const departmentsTable = cTable.getTable(tableItems);
-        // console.log(departmentsTable);
-        
-        // // Call viewDepartments() function
-        // viewDepartments();
 
     });
 }
@@ -186,4 +166,31 @@ function printSupervisorTable(items) {
     // This is not how I wanted to end the program. I tried added startMenu() but it would just keep appending the single table with all table results each time this function was called. I couldn't figure out why.
     connection.end();
     process.exit(0);
+    // startMenu();
+}
+
+function viewProductSalesByDepartment() {
+
+    connection.query("select departments.department_id, departments.department_name, departments.overhead_costs, sum(products.product_sales) as product_sales_total, sum(products.product_sales) - departments.overhead_costs as total_profit FROM departments inner join products on TRIM(departments.department_name) = TRIM(products.department_name) where products.department_name = departments.department_name group by departments.department_name order by departments.department_name asc;", function(err, results) {
+        
+        // Loop through all of the departments and push them into the supervisorTableItems array
+        for (var i=0; i < results.length; i++) {
+            productSalesArray.push(
+                {
+                deptID: results[i].department_id,
+                dept_Name: results[i].department_name,
+                overheadCosts: results[i].overhead_costs,
+                productSalesTotal: results[i].product_sales_total,
+                totalProfit: results[i].total_profit
+                }
+            );
+        }
+
+        // Use console.table npm package to format and display products
+        const productSalesTable = supervisorTables.getTable(productSalesArray);
+        console.log(productSalesTable);
+        console.log("\n");
+        startMenu()
+    });
+    
 }

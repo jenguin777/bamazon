@@ -101,25 +101,20 @@ function readAllItems() {
 function updateItem(selectedItemID,selectedItemQuantity) {
     
     // Fetch the selected item from the bamazon database
-    connection.query("select item_id, product_name, department_name, round(price, 2) as price, stock_quantity FROM products where item_id = ?",[selectedItemID], function(err, res) {
+    connection.query("select item_id, product_name, department_name, round(price, 2) as price, stock_quantity, product_sales FROM products where item_id = ?",[selectedItemID], function(err, res) {
         if (err) throw err;
         var fetchedItem = res[0];
         
-        console.log("Checking quantity for your item...");
-            
-        // use console.table method to format and display fetchedItem
-        const table = cTable.getTable(fetchedItem);
-        console.log(table);
+        console.log("Checking quantity for your item...");    
 
         if (selectedItemQuantity > fetchedItem.stock_quantity) {
             console.log("Sorry, there is insufficient quantity to fill this order.");
             connection.end();
             return;
         } else {
-
+            console.log("Good news, you ordered " +  selectedItemQuantity + ". We have " + fetchedItem.stock_quantity + " available!");
             var newQuantity = fetchedItem.stock_quantity - selectedItemQuantity;
-            console.log("Updating product's stock_quantity...\n");
-            var query = connection.query(
+            var updateQuantity = connection.query(
               "UPDATE products SET ? WHERE ?",
               [
                 {
@@ -130,10 +125,26 @@ function updateItem(selectedItemID,selectedItemQuantity) {
                 }
               ],
               function(err, res) {
-                console.log(" product updated!\n");
+                console.log(" product's stock_quantity updated!\n");
                 }
             );
-            console.log("order filled");
+            var totalSale = selectedItemQuantity * fetchedItem.price;
+            var productSales = fetchedItem.product_sales + totalSale;
+            var updateProductSales = connection.query(
+                "UPDATE products SET ? WHERE ?",
+                [
+                  {
+                    product_sales: productSales
+                  },
+                  {
+                    item_id: selectedItemID
+                  }
+                ],
+                function(err, res) {
+                  console.log(" product's product_sales updated!\n");
+                  }
+              );
+              console.log("order filled");        
         }
         displayTotals(selectedItemID,selectedItemQuantity);
     });  
@@ -146,7 +157,7 @@ function displayTotals(selectedItemID,selectedItemQuantity) {
         var purchasedItem = item[0];
 
         var totalPrice = selectedItemQuantity * purchasedItem.price;
-        console.log("The total price for your purchase is: " + totalPrice);
+        console.log("The total price for your purchase is: " + totalPrice.toPrecision(2));
         console.log("The new stock_quantity for the item you purchased is: " + purchasedItem.stock_quantity);
 
     });

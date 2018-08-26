@@ -125,7 +125,7 @@ function addNewProduct() {
     {
         type: "list",
         message: "Which department is your item for?",
-        choices: ["Books", "Computers", "Electronics", "Housewares", "Sports and Outdoors"],
+        choices: ["Books", "Computers", "Electronics", "Housewares", "Sports and Outdoors","Music","Automotive"],
         name: "department"
     },
     {
@@ -253,7 +253,7 @@ function printTable(items) {
     // Use console.table npm package to format and display products
     const table = managerTables.getTable(tableItemsArray);
     console.log(table);
-    console.log("\n");
+    
     // console.log("-----End of products, returning to main menu");
     // Need to clear out the table variable so that it's cleared out for the next time the method is called - table = []; doesn't work
     
