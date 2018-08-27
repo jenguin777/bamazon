@@ -214,9 +214,9 @@ function addInventory() {
                 choices: function() {
                     var choiceArray = [];
                     for (var i = 0; i < results.length; i++) {
-                    choiceArray.push(results[i]);
+                    choiceArray.push(results[i].product_name);
                     }
-                    console.log("-----choiceArray: " + JSON.stringify(choiceArray));
+                    //console.log("-----choiceArray: " + JSON.stringify(choiceArray));
                     return choiceArray;
                 },
                 message: "Select the product you wish to add inventory for."
