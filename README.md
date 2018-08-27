@@ -29,6 +29,9 @@ An interactive Amazon-like storefront.
 # NPM package installation required
 Just run "npm install" in a terminal window after cloning the project. The required packages will be fetched from the package.json file and installed on your machine.
 
+# Database creation
+You can use the DDL statements in bamazon.sql to create your own database and database objects.
+
 # License
 MIT license applies.
 
