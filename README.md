@@ -1,9 +1,9 @@
 # Bamazon
-An interactive Amazon-like storefront.
+An interactive Amazon-like storefront that can be run via node in a Terminal window (i.e., node bamazonCustomer.js).
 
 `bamazonCustomer.js`- running this application will first display the ids, names, and prices of all products for sale. It will take in an order, check quantity, and deplete stock from the store's inventory when the customer orders.
 
-`bamazonManager.js` - unning this application will provide the following options for Managers:
+`bamazonManager.js` - running this application will provide the following options for Managers:
 
     * View Products for Sale - lists item IDs, names, prices, and quantities for every available item.
     
