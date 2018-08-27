@@ -26,6 +26,8 @@ An interactive Amazon-like storefront.
 * MySQL
 * Javascript
 
+# NPM installation required
+Just run "npm install" after cloning the project. The required packages will be fetched from the package.json file and installed on your machine.
 
 # License
 MIT license applies.
