@@ -32,6 +32,9 @@ Just run "npm install" in a terminal window after cloning the project. The requi
 # Database creation required
 You can use the DDL statements in bamazon.sql to create your own database and database objects.
 
+# Demo video
+Demo.mp4 is a video demo of the functionality.
+
 # License
 MIT license applies.
 
