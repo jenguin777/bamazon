@@ -155,12 +155,24 @@ function addNewProduct() {
     {
         type: "input",
         name: "price",
-        message: "Enter the price of your item:"
+        message: "Enter the price of your item:",
+        validate: function(value) {
+            if (isNaN(value) === false) {
+              return true;
+            }
+            return false;
+        }  
     },
     {
         type: "input",
         name: "quantity",
-        message: "Enter the quantity of your item:"
+        message: "Enter the quantity of your item:",
+        validate: function(value) {
+            if (isNaN(value) === false) {
+              return true;
+            }
+            return false;
+        }  
     }
     
   
@@ -210,14 +222,12 @@ function addInventory() {
             inquirer.prompt([
                 {
                     name: "choice",
-                    type: "rawlist",            
+                    type: "list",            
                     choices: function() {
                         var choiceArray = [];
                         for (var i = 0; i < results.length; i++) {
                         choiceArray.push(results[i].product_name);
                         }
-                        //console.log("-----choiceArray: " + JSON.stringify(choiceArray));
-                        // console.log ("choiceArray just before return: " + choiceArray);
                         return choiceArray;
                     },
                     message: "Select the product you wish to add inventory for."
@@ -225,11 +235,17 @@ function addInventory() {
                 {
                     type: "input",
                     name: "addAmount",
-                    message: "Enter the quantity you wish to add for this product:"
+                    message: "Enter the quantity you wish to add for this product:",
+                    validate: function(value) {
+                        if (isNaN(value) === false) {
+                          return true;
+                        }
+                        return false;
+                    }  
                 }
             ])
             .then(function(answer) {
-        
+            
                 // get the information of the chosen item
                 var chosenItem;
                 var newQuantity;
@@ -237,7 +253,7 @@ function addInventory() {
                     if (results[i].product_name === answer.choice) {
                         chosenItem = results[i];
                         // console.log("chosenItem: " + chosenItem);
-                        newQuantity = chosenItem.stock_quantity + answer.addAmount;
+                        newQuantity = parseInt(chosenItem.stock_quantity) + parseInt(answer.addAmount);
                         // console.log("newQuantity: " + newQuantity);
                     }
                 }
@@ -257,6 +273,19 @@ function addInventory() {
                     console.log("Quantity updated successfully!");
                 }
             );
+
+            connection.query("select item_id, product_name, stock_quantity, department_name, round(price, 2) as price FROM products where item_id = ?", 
+            chosenItem.item_id, function(err, updatedItem) {
+                if (err) throw err;
+                
+                console.log("\n");
+
+                var updatedResult = updatedItem;
+
+                printTable(updatedResult);
+
+                // startMenu();
+            });
 
         });
 
