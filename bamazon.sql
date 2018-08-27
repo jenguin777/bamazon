@@ -1,4 +1,4 @@
--- bamazonCustomer.js and bamazonManager.js
+-- DDL for bamazonCustomer.js and bamazonManager.js
 
 ALTER USER 'root'@'localhost' IDENTIFIED WITH mysql_native_password BY 'Grape777!'
 
@@ -17,6 +17,7 @@ CREATE TABLE products (
   PRIMARY KEY (item_id)
 );
 
+-- Create products
 insert into products (product_name, department_name, price, stock_quantity)
 values ("Schwinn Bike", "Sports and Outdoors", 400.00, 10);
 
@@ -50,30 +51,35 @@ values ("20 piece Stainless Steel Flatware", "Housewares", 19.99, 10);
 insert into products (product_name, department_name, price, stock_quantity)
 values ("32 inch HDTV", "Electronics", 199.99, 15);
 
+-- additional helpful queries
+
+-- use bamazon database
+use bamazon;
+
 select * from products;
 
 select * FROM products order by department_name asc, product_name asc;
 
-use bamazon;
-
+-- show item_id, product_name, department_name, price for all products, order by department
 select item_id, product_name, department_name, round(price, 2) as price FROM products order by department_name asc;
 
+-- show item_id, product_name, department_name, price, stock_quantity for all products, order by department
+select item_id, product_name, department_name, round(price, 2) as price, stock_quantity FROM products order by department_name asc;
+
+-- show item_id, product_name, stock_quantity for all products, order by department
+select item_id, product_name, stock_quantity FROM products order by department_name asc;
+
+-- show item_id, product_name, stock_quantity for all products, order by product_name
+select item_id, product_name, stock_quantity FROM products order by product_name asc;
+
+-- show specific product (by item_id)
 select item_id, product_name, department_name, round(price, 2) as price, stock_quantity FROM products where item_id = 10;
 
 -- UPDATE products SET stock_quantity = 11 WHERE item_id = 1;
 
-
-select item_id, product_name, department_name, round(price, 2) as price, stock_quantity FROM products order by department_name asc;
-
-use bamazon;
-
-select item_id, product_name, stock_quantity FROM products order by department_name asc;
-
-select item_id, product_name, stock_quantity FROM products order by product_name asc;
-
 -- delete from products where item_id = 14;
 
--- bamazonSupervisor.js
+-- DDL for departments table, used by bamazonSupervisor.js
 
 use bamazon;
 
@@ -84,6 +90,11 @@ CREATE TABLE departments (
   PRIMARY KEY (department_id)
 );
 
+-- add product_sales column to products table
+-- alter table products
+-- add column product_sales Decimal(19,4) default 0;
+
+-- Create departments
 insert into departments (department_name, overhead_costs)
 values ("Sports and Outdoors", 5000.00);
 
@@ -99,24 +110,22 @@ values ("Electronics", 8000.00);
 insert into departments (department_name, overhead_costs)
 values ("Housewares", 6000.00);
 
+-- additional helpful queries
+
 select * from departments order by department_name asc;
 
--- add product_sales column to products table
--- alter table products
--- add column product_sales Decimal(19,4) default 0;
-
-select * from products;
-
-select * from products where item_id = 12;
-
+-- show item_id, product_name, department_name, price, stock_quantity, product_sales for all products, order by department
 select item_id, product_name, department_name, round(price, 2) as price, stock_quantity, product_sales FROM products where item_id = 12;
 
+-- show distinct department_names in product table
 Select distinct department_name from products;
 
+-- show distinct department_names in departments table
+Select distinct department_name from departments;
+
+-- show product_sales grouped by department
 Select department_name, sum(product_sales) from products
 group by department_name;
-
-Select distinct department_name from departments;
 
 Select * from departments;
 
