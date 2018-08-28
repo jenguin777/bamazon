@@ -22,7 +22,7 @@ An interactive Amazon-like storefront that can be run via node in a Terminal win
     * View Departments - lists the Department ID, Department Name, and Overhead Costs for all departments.
 
 # Technologies used
-* Node.js (inquirer, mysql, console.table packages)
+* Node.js (dotenv, inquirer, mysql, console.table packages)
 * MySQL
 * Javascript
 
@@ -31,6 +31,17 @@ Just run "npm install" in a terminal window after cloning the project. The requi
 
 # Database creation required
 You can use the DDL statements in bamazon.sql to create your own database and database objects.
+
+# Security 
+dotenv was used to mask database credentials, you'll need to provide the following for the mySQL connection:
+
+var connection = mysql.createConnection({
+    host: DB_HOST,
+    port: DB_PORT,
+    user: DB_USER,
+    password: DB_PASSWORD,
+    database: DB_DATABASE
+});
 
 # Demo video
 [Demo.mp4](https://github.com/jenguin777/bamazon/blob/master/Demo.mp4) is a video demo of the functionality.
