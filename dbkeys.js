@@ -1,4 +1,6 @@
-console.log("dbkeys.js is loaded");
+require("dotenv").config();
+
+// console.log("dbkeys.js is loaded");
 
 exports.accessDatabase = {
     host: process.env.DB_HOST,

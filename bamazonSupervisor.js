@@ -1,13 +1,14 @@
 //----------------ENVIRONMENT CONFIG---------------------------------//
 
 // read and set any environment variables defined per .env and dbkeys.js - used with the "dotenv" npm package
-var keys = require("./dbkeys.js");
+
+var dbkeys = require("./dbkeys.js");
 
 //----------------IMPORT NPM PACKAGES---------------------------------//
-var getEnv = require("dotenv").config();
+require("dotenv").config();
 var inquirer = require("inquirer");
 var mysql = require("mysql");
-const supervisorTables = require("console.table");
+var supervisorTables = require("console.table");
 
 //----------------GLOBAL VARIABLES------------------------------------//
 
@@ -15,40 +16,13 @@ var supervisorTableItemsArray = [];
 var productSalesArray = [];
 
 //----------------CREATE MYSQL CONNECTION-----------------------------//
+
+var connection = mysql.createConnection(dbkeys.accessDatabase);
      
-// var connection = mysql.createConnection({
-//     host: keys.connectDatabase.host,
-    
-//     // Your port; if not 3306
-//     port: keys.connectDatabase.port,
-    
-//     // Your username
-//     user: keys.connectDatabase.user,
-    
-//     // Your password
-//     password: keys.connectDatabase.password,
-//     database: keys.connectDatabase.database
-// });
-
-var connection = mysql.createConnection({
-    host: "localhost",
-    
-    // Your port; if not 3306
-    port: 3307,
-    
-    // Your username
-    user: "root",
-    
-    // Your password
-    password: "Grape777!",
-    database: "bamazon"
-});
-
-      
 // Now connect to the database
 connection.connect(function(err) {
     if (err) throw err;
-    console.log("connected as id " + connection.threadId);
+    // console.log("connected as id " + connection.threadId);
 
     useBamazonDB();
 
@@ -111,6 +85,7 @@ function viewDepartments() {
 
         printSupervisorTable(result);
 
+        startMenu();
     });
 }
 
@@ -183,17 +158,9 @@ function printSupervisorTable(items) {
     }
     
     // Use console.table npm package to format and display products
-    const departmentsTable = supervisorTables.getTable(supervisorTableItemsArray);
+    var departmentsTable = supervisorTables.getTable(supervisorTableItemsArray);
     console.log(departmentsTable);
     console.log("\n");
-    
-    // console.log("-----End of departments, returning to main menu");
-    // Need to clear out the table variable so that it's cleared out for the next time the method is called - table = []; doesn't work
-    
-    // This is not how I wanted to end the program. I tried added startMenu() but it would just keep appending the single table with all table results each time this function was called. I couldn't figure out why.
-    connection.end();
-    process.exit(0);
-    // startMenu();
 }
 
 function viewProductSalesByDepartment() {
@@ -207,14 +174,14 @@ function viewProductSalesByDepartment() {
                 deptID: results[i].department_id,
                 dept_Name: results[i].department_name,
                 overheadCosts: results[i].overhead_costs,
-                productSalesTotal: results[i].product_sales_total,
-                totalProfit: results[i].total_profit
+                productSalesTotal: results[i].product_sales_total ? results[i].product_sales_total : "No Sales",
+                totalProfit: results[i].total_profit ? results[i].total_profit : "No Sales"
                 }
             );
         }
 
         // Use console.table npm package to format and display products
-        const productSalesTable = supervisorTables.getTable(productSalesArray);
+        var productSalesTable = supervisorTables.getTable(productSalesArray);
         console.log(productSalesTable);
         console.log("\n");
         startMenu();

@@ -7,51 +7,19 @@ var dbkeys = require("./dbkeys.js");
 require("dotenv").config();
 var inquirer = require("inquirer");
 var mysql = require("mysql");
-const cTable = require('console.table');
-
-//----------------GLOBAL VARIABLES------------------------------------//
-
-var tableItems = [];
+var cTable = require('console.table');
 
 //----------------CREATE MYSQL CONNECTION-----------------------------//
 // console.log("Keys test " + JSON.stringify(dbkeys));
+// console.log("process.env" + process.env.DB_PASSWORD);
 
 var connection = mysql.createConnection(dbkeys.accessDatabase);
 
-// var connection = mysql.createConnection({
-//     host: dbkeys.connectDatabase.host,
-    
-//     // Your port; if not 3306
-//     port: dbkeys.connectDatabase.port,
-    
-//     // Your username
-//     user: dbkeys.connectDatabase.user,
-    
-//     // Your password
-//     password: dbkeys.connectDatabase.password,
-//     database: dbkeys.connectDatabase.database
-// });
-
-var connection = mysql.createConnection({
-    host: "localhost",
-    
-    // Your port; if not 3306
-    port: 3307,
-    
-    // Your username
-    user: "root",
-    
-    // Your password
-    password: "Grape777!",
-    database: "bamazon"
-});
-
-
 // Now connect to the database
 connection.connect(function(err) {
-    // console.log("Keys test " + JSON.stringify(dbkeys));
+    
     if (err) throw err;
-    console.log("connected as id " + connection.threadId);
+    // console.log("connected as id " + connection.threadId);
 
     useBamazonDB();
 
@@ -113,6 +81,7 @@ function readAllItems() {
         console.log("\n");
 
         // Loop through all of the products and push them into the tableItems array
+        var tableItems = [];
         for (var i=0; i < res.length; i++) {
             tableItems.push(
                 {
@@ -126,7 +95,7 @@ function readAllItems() {
         }
         
         // Use console.table npm package to format and display products
-        const table = cTable.getTable(tableItems);
+        var table = cTable.getTable(tableItems);
         console.log(table);
         
         // Call purchaseItems() function
@@ -197,7 +166,7 @@ function displayTotals(selectedItemID,selectedItemQuantity) {
         var totalPrice = trimmedQuantity * purchasedItem.price.toFixed(2);
         console.log("The total price for your purchase is: $" + totalPrice + "\n");
         console.log("The new stock_quantity for the item you purchased is: " + purchasedItem.stock_quantity + "\n");
-
+        
     });
     connection.end();
 }

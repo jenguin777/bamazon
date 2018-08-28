@@ -7,50 +7,16 @@ var keys = require("./dbkeys.js");
 var getEnv = require("dotenv").config();
 var inquirer = require("inquirer");
 var mysql = require("mysql");
-const managerTables = require("console.table");
-
-//----------------GLOBAL VARIABLES------------------------------------//
-
-var tableItemsArray = [];
+var managerTables = require("console.table");
 
 //----------------CREATE MYSQL CONNECTION-----------------------------//
 
-// var connection = mysql.createConnection(keys.accessDatabase);
-
-var connection = mysql.createConnection({
-    host: "localhost",
-    
-    // Your port; if not 3306
-    port: 3307,
-    
-    // Your username
-    user: "root",
-    
-    // Your password
-    password: "Grape777!",
-    database: "bamazon"
-});
-
-
-// var connection = mysql.createConnection({
-//     host: keys.connectDatabase.host,
-    
-//     // Your port; if not 3306
-//     port: keys.connectDatabase.port,
-    
-//     // Your username
-//     user: keys.connectDatabase.user,
-    
-//     // Your password
-//     password: keys.connectDatabase.password,
-//     database: keys.connectDatabase.database
-// });
+var connection = mysql.createConnection(keys.accessDatabase);
       
 // Now connect to the database
 connection.connect(function(err) {
-    // console.log("Keys test " + keys);
     if (err) throw err;
-    console.log("connected as id " + connection.threadId);
+    // console.log("connected as id " + connection.threadId);
 
     useBamazonDB();
 
@@ -105,7 +71,6 @@ function startMenu() {
     
 }
     
-// wanted to try to call readAllItems but couldn't figure out how to leave out purchaseItems()
 function viewProducts() {
     console.log("Here's a list of all Products:");
     // Fetch all products from the bamazon database, round price to 2 digits of precision
@@ -117,8 +82,9 @@ function viewProducts() {
         var result = res;
 
         printTable(res);
+
+        startMenu();
     });
-    startMenu();
 }
 
 function lowInventory() {
@@ -132,55 +98,69 @@ function lowInventory() {
         var result = results;
 
         printTable(results);
+
+        startMenu();
     });
-    // startMenu();
 }
 
 function addNewProduct() {
 
-    // Prompt the user to provide item information.
-    inquirer.prompt([
+    connection.query("select distinct(department_name) FROM departments order by department_name asc", function(err, results) {
+        
+        if (err) throw err;
 
-    {
-        type: "input",
-        name: "productName",
-        message: "What is the name of your product?"
-    },
-    {
-        type: "list",
-        message: "Which department is your item for?",
-        choices: ["Books", "Computers", "Electronics", "Housewares", "Sports and Outdoors","Music","Automotive"],
-        name: "department"
-    },
-    {
-        type: "input",
-        name: "price",
-        message: "Enter the price of your item:",
-        validate: function(value) {
-            if (isNaN(value) === false) {
-              return true;
-            }
-            return false;
-        }  
-    },
-    {
-        type: "input",
-        name: "quantity",
-        message: "Enter the quantity of your item:",
-        validate: function(value) {
-            if (isNaN(value) === false && value % 1 === 0) {
-              return true;
-            }
-            return false;
-        }  
-    }
+        // Prompt the user to provide item information.
+        inquirer.prompt([
+
+        {
+            type: "input",
+            name: "productName",
+            message: "What is the name of your product?"
+        },
+        {
+            type: "list",
+            message: "Which department is your item for?",
+            choices: function() {
+                // I want to be able to generate this list dynamically...need to import Dept object
+                var deptChoiceArray = [];
+                for (var i = 0; i < results.length; i++) {
+                deptChoiceArray.push(results[i].department_name);
+                }
+                return deptChoiceArray;
+            },
+            // choices: ["Books", "Computers", "Electronics", "Housewares", "Sports and Outdoors","Music","Automotive"],
+            name: "department"
+        },
+        {
+            type: "input",
+            name: "price",
+            message: "Enter the price of your item:",
+            validate: function(value) {
+                if (isNaN(value) === false) {
+                return true;
+                }
+                return false;
+            }  
+        },
+        {
+            type: "input",
+            name: "quantity",
+            message: "Enter the quantity of your item:",
+            validate: function(value) {
+                if (isNaN(value) === false && value % 1 === 0) {
+                return true;
+                }
+                return false;
+            }  
+        }
+        
     
-  
-    // After the prompt, pass in item to insertItem(), then call it
-    ]).then(function(item) {
+        // After the prompt, pass in item to insertItem(), then call it
+        ]).then(function(item) {
 
-        insertItem(item);
+            insertItem(item);
 
+        });
     });
 }
 
@@ -207,7 +187,6 @@ function insertItem(item) {
         function(err, res) {
             // console.log(res.affectedRows + " product inserted!\n");
             console.log("item inserted!\n");
-            // connection.end();
         }
     );
     viewProducts();
@@ -252,9 +231,7 @@ function addInventory() {
                 for (var i = 0; i < results.length; i++) {
                     if (results[i].product_name === answer.choice) {
                         chosenItem = results[i];
-                        // console.log("chosenItem: " + chosenItem);
                         newQuantity = parseInt(chosenItem.stock_quantity) + parseInt(answer.addAmount);
-                        // console.log("newQuantity: " + newQuantity);
                     }
                 }
         
@@ -284,7 +261,7 @@ function addInventory() {
 
                 printTable(updatedResult);
 
-                // startMenu();
+                startMenu();
             });
 
         });
@@ -294,6 +271,8 @@ function addInventory() {
 
 function printTable(items) {
     // Loop through all of the products and push them into the tableItems array
+    var tableItemsArray = [];
+
     for (var i=0; i < items.length; i++) {
         tableItemsArray.push(
             {
@@ -307,13 +286,6 @@ function printTable(items) {
     }
 
     // Use console.table npm package to format and display products
-    const table = managerTables.getTable(tableItemsArray);
+    var table = managerTables.getTable(tableItemsArray);
     console.log(table);
-    
-    // console.log("-----End of products, returning to main menu");
-    // Need to clear out the table variable so that it's cleared out for the next time the method is called - table = []; doesn't work
-    
-    // This is not how I wanted to end the program. I tried added startMenu() but it would just keep appending the single table with all table results each time this function was called. I couldn't figure out why.
-    connection.end();
-    process.exit(0);
 }
