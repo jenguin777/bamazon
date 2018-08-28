@@ -127,7 +127,13 @@ function addNewDepartment() {
     {
         type: "input",
         name: "overheadCosts",
-        message: "Enter the starting overhead costs value for your new department:"
+        message: "Enter the starting overhead costs value for your new department:",
+        validate: function(value) {
+            if (isNaN(value) === false) {
+              return true;
+            }
+            return false;
+        } 
     },
       
     // After the prompt, pass in item to insertItem(), then call it

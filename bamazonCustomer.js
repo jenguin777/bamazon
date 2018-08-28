@@ -81,7 +81,7 @@ function purchaseItems() {
             name: "Quantity",
             message: "Enter the quantity of the item you wish to purchase.",
             validate: function(value) {
-                if (isNaN(value) === false) {
+                if (isNaN(value) === false && value % 1 === 0) {
                   return true;
                 }
                 return false;
@@ -91,7 +91,7 @@ function purchaseItems() {
     // After the prompt, store the user's responses in variables: newItem, category, startingBid
     ]).then(function(selectedItem) {
         // Display user's selection
-        console.log("You entered item: " + JSON.stringify(selectedItem) + "\n");
+        console.log("You entered item ID: " + selectedItem.itemID + " Quantity " + selectedItem.Quantity + "\n");
         // Now call updateItem() to make updates to product if sufficient quantity exists
         updateItem(selectedItem.itemID,selectedItem.Quantity);
         
@@ -101,11 +101,8 @@ function purchaseItems() {
 function useBamazonDB() {
     connection.query("use bamazon;", function(err, res) {
         if (err) throw err;
-        // console.log("Using bamazon...");
     });
 }
-
-
 
 function readAllItems() {
     console.log("Welcome to Bamazon! Here's a list of items currently for sale!");
@@ -169,7 +166,7 @@ function updateItem(selectedItemID,selectedItemQuantity) {
                 console.log("product's stock_quantity updated!\n");
                 }
             );
-            var totalSale = parseInt(selectedItemQuantity) * parseFloat(fetchedItem.price);
+            var totalSale = parseInt(selectedItemQuantity) * fetchedItem.price;
             var productSales = fetchedItem.product_sales + totalSale;
             var updateProductSales = connection.query(
                 "UPDATE products SET ? WHERE ?",
@@ -196,8 +193,8 @@ function displayTotals(selectedItemID,selectedItemQuantity) {
     connection.query("select item_id, product_name, department_name, round(price, 2) as price, stock_quantity FROM products where item_id = ?", [selectedItemID], function(err, item) {
         if (err) throw err;
         var purchasedItem = item[0];
-
-        var totalPrice = parseInt(selectedItemQuantity) * parseInt(purchasedItem.price);
+        var trimmedQuantity = parseInt(selectedItemQuantity);
+        var totalPrice = trimmedQuantity * purchasedItem.price.toFixed(2);
         console.log("The total price for your purchase is: $" + totalPrice + "\n");
         console.log("The new stock_quantity for the item you purchased is: " + purchasedItem.stock_quantity + "\n");
 

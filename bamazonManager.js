@@ -168,7 +168,7 @@ function addNewProduct() {
         name: "quantity",
         message: "Enter the quantity of your item:",
         validate: function(value) {
-            if (isNaN(value) === false) {
+            if (isNaN(value) === false && value % 1 === 0) {
               return true;
             }
             return false;
@@ -237,7 +237,7 @@ function addInventory() {
                     name: "addAmount",
                     message: "Enter the quantity you wish to add for this product:",
                     validate: function(value) {
-                        if (isNaN(value) === false) {
+                        if (isNaN(value) === false && value % 1 === 0) {
                           return true;
                         }
                         return false;

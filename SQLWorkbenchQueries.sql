@@ -121,15 +121,20 @@ Select * from departments;
 -- Update departments set overhead_costs = 200 where department_id = 6;
 
 -- View Product Sales By Department Query
-select departments.department_id, departments.department_name, departments.overhead_costs, sum(products.product_sales) as product_sales_total, sum(products.product_sales) - departments.overhead_costs as total_profit
-FROM departments
-inner join products 
-on TRIM(departments.department_name) = TRIM(products.department_name)
-where products.department_name = departments.department_name
-group by departments.department_name
+select departments.department_id, departments.department_name, departments.overhead_costs, 
+sum(products.product_sales) as product_sales_total, 
+sum(products.product_sales) - departments.overhead_costs as total_profit 
+FROM departments inner join products 
+on TRIM(departments.department_name) = TRIM(products.department_name) 
+where products.department_name = departments.department_name 
+group by departments.department_name 
 order by departments.department_name asc;
 
 -- View Product Sales By Department Query on one line
 select departments.department_id, departments.department_name, departments.overhead_costs, sum(products.product_sales) as product_sales_total, sum(products.product_sales) - departments.overhead_costs as total_profit FROM departments inner join products on TRIM(departments.department_name) = TRIM(products.department_name) where products.department_name = departments.department_name group by departments.department_name order by departments.department_name asc;
 
+select * from products;
 
+Update products set stock_quantity = 25 where item_id = 11;
+
+select item_id, product_name, stock_quantity FROM products where item_id = 11;
