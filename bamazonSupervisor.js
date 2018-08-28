@@ -198,7 +198,7 @@ function printSupervisorTable(items) {
 
 function viewProductSalesByDepartment() {
 
-    connection.query("select departments.department_id, departments.department_name, departments.overhead_costs, sum(products.product_sales) as product_sales_total, sum(products.product_sales) - departments.overhead_costs as total_profit FROM departments inner join products on TRIM(departments.department_name) = TRIM(products.department_name) where products.department_name = departments.department_name group by departments.department_name order by departments.department_name asc;", function(err, results) {
+    connection.query("select departments.department_id, departments.department_name, departments.overhead_costs, sum(products.product_sales) as product_sales_total, sum(products.product_sales) - departments.overhead_costs as total_profit FROM products left join departments on TRIM(departments.department_name) = TRIM(products.department_name) UNION ALL select departments.department_id, departments.department_name, departments.overhead_costs, sum(products.product_sales) as product_sales_total, sum(products.product_sales) - departments.overhead_costs as total_profit FROM products right join departments on TRIM(departments.department_name) = TRIM(products.department_name) group by departments.department_name", function(err, results) {
         
         // Loop through all of the departments and push them into the supervisorTableItems array
         for (var i=0; i < results.length; i++) {
