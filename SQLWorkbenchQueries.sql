@@ -179,7 +179,7 @@ WHERE t1.id IS NULL;
 -- t2 = departments
 
 
--- View Product Sales By Department Query - returns duplicate rows
+-- View Product Sales By Department Query - returns duplicate rows, need to change to full or outer join
 select departments.department_id, departments.department_name, departments.overhead_costs, 
 sum(products.product_sales) as product_sales_total, 
 sum(products.product_sales) - departments.overhead_costs as total_profit 
@@ -194,26 +194,16 @@ FROM products
 right join departments 
 on departments.department_name = products.department_name;
 
-
-
 -- 8 of 11 departments returned, 3 departments don't have product rows
+-- the following queries are troubleshooting queries for the View Product Sales By Department query
+
+-- Changed SQL to the equivalent of a full join in order to handle newly added departments that have no products because Manager 
+-- hasn't added them yet. Still need to fix the 2 rows for Sports and Outdoors...I know how to fix this in Oracle but the Oracle SQL 
+-- fix (4 table aliases, T2.department_name != T4.department name) doesn't work in mySQL.
+-- error is: 13:49:10	select T2.department_id, T2.department_name, T2.overhead_costs, sum(T1.product_sales) as product_sales_total, sum(T1.product_sales) - T2.overhead_costs as total_profit  FROM departments T2 left join products T1 on (T1.department_name = T2.department_name) UNION ALL  select T4.department_id, T4.department_name, T4.overhead_costs, sum(T3.product_sales) as product_sales_total, sum(T3.product_sales) - T4.overhead_costs as total_profit  FROM departments T4  right join products T3 on (T3.department_name = T4.department_name) and T2.department_name != T4.department_name  group by T4.department_name	Error Code: 1054. Unknown column 'T2.department_name' in 'on clause'	0.000 sec
+
 
 Select * from departments;
-
---
-select departments.department_id, products.department_name, departments.overhead_costs,  
-sum(products.product_sales) as product_sales_total,  sum(products.product_sales) - departments.overhead_costs as total_profit  
-FROM products T1 
-left join departments T2
-on TRIM(departments.department_name) = TRIM(products.department_name) 
-UNION ALL
-select departments.department_id, products.department_name, departments.overhead_costs,  
-sum(products.product_sales) as product_sales_total,  sum(products.product_sales) - departments.overhead_costs as total_profit  
-FROM products  
-right join departments  
-on TRIM(departments.department_name) = TRIM(products.department_name)  
--- where products.department_name is null
-group by departments.department_name;
 
 Select * from products T1
 Left join departments T2
@@ -253,9 +243,9 @@ on TRIM(departments.department_name) = TRIM(products.department_name)
 group by departments.department_name;
 
 
-select departments.department_id, departments.department_name, departments.overhead_costs,  sum(products.product_sales) as product_sales_total,  sum(products.product_sales) - departments.overhead_costs as total_profit  FROM departments  left join products  on TRIM(departments.department_name) = TRIM(products.department_name) UNION select departments.department_id, departments.department_name, departments.overhead_costs,  sum(products.product_sales) as product_sales_total,  sum(products.product_sales) - departments.overhead_costs as total_profit  FROM departments  right join products  on TRIM(departments.department_name) = TRIM(products.department_name)  group by departments.department_name	
+select departments.department_id, departments.department_name, departments.overhead_costs,  sum(products.product_sales) as product_sales_total,  sum(products.product_sales) - departments.overhead_costs as total_profit  FROM departments  left join products  on TRIM(departments.department_name) = TRIM(products.department_name) UNION select departments.department_id, departments.department_name, departments.overhead_costs,  sum(products.product_sales) as product_sales_total,  sum(products.product_sales) - departments.overhead_costs as total_profit  FROM departments  right join products  on TRIM(departments.department_name) = TRIM(products.department_name)  group by departments.department_name;
 
-
+-- returns 11 rows, Sports and Outdoors duplicated
 select departments.department_id, departments.department_name, departments.overhead_costs,   
 sum(products.product_sales) as product_sales_total,  sum(products.product_sales) - departments.overhead_costs as total_profit   
 FROM products   
@@ -266,6 +256,31 @@ FROM products   right join departments
 on TRIM(departments.department_name) = TRIM(products.department_name) 
 group by departments.department_name;
 
--- checkin 8/27/2018
+-- checkin 8/27/2018 - equivalent of full join
 select departments.department_id, departments.department_name, departments.overhead_costs, sum(products.product_sales) as product_sales_total, sum(products.product_sales) - departments.overhead_costs as total_profit FROM products left join departments on TRIM(departments.department_name) = TRIM(products.department_name) UNION ALL select departments.department_id, departments.department_name, departments.overhead_costs, sum(products.product_sales) as product_sales_total, sum(products.product_sales) - departments.overhead_costs as total_profit FROM products right join departments on TRIM(departments.department_name) = TRIM(products.department_name) group by departments.department_name;
 
+select T2.department_id, T2.department_name, T2.overhead_costs, sum(T1.product_sales) as product_sales_total, sum(T1.product_sales) - T2.overhead_costs as total_profit 
+FROM products T1
+left join departments T2
+on TRIM(T2.department_name) = TRIM(T1.department_name)
+UNION ALL 
+select T4.department_id, T4.department_name, T4.overhead_costs, sum(T3.product_sales) as product_sales_total, sum(T3.product_sales) - T4.overhead_costs as total_profit 
+FROM products T3
+right join departments T4
+on TRIM(T3.department_name) = TRIM(T4.department_name) 
+group by T4.department_name;
+
+select T2.department_id, T2.department_name, T2.overhead_costs, sum(T1.product_sales) as product_sales_total, sum(T1.product_sales) - T2.overhead_costs as total_profit 
+FROM departments T2
+left join products T1
+on (T1.department_name = T2.department_name)
+UNION ALL 
+select T4.department_id, T4.department_name, T4.overhead_costs, sum(T3.product_sales) as product_sales_total, sum(T3.product_sales) - T4.overhead_costs as total_profit 
+FROM departments T4 
+right join products T3
+on (T3.department_name = T4.department_name)
+and T2.department_name != T4.department_name 
+group by T4.department_name;
+
+
+select distinct(department_name) FROM departments order by department_name asc;

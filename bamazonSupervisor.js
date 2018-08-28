@@ -164,7 +164,7 @@ function printSupervisorTable(items) {
 }
 
 function viewProductSalesByDepartment() {
-
+    // Changed SQL to the equivalent of a full join in order to handle newly added departments that have no products because Manager hasn't added them yet. Still need to fix the 2 rows for Sports and Outdoors...I know how to fix this in Oracle but the Oracle SQL fix doesn't work in mySQL.
     connection.query("select departments.department_id, departments.department_name, departments.overhead_costs, sum(products.product_sales) as product_sales_total, sum(products.product_sales) - departments.overhead_costs as total_profit FROM products left join departments on TRIM(departments.department_name) = TRIM(products.department_name) UNION ALL select departments.department_id, departments.department_name, departments.overhead_costs, sum(products.product_sales) as product_sales_total, sum(products.product_sales) - departments.overhead_costs as total_profit FROM products right join departments on TRIM(departments.department_name) = TRIM(products.department_name) group by departments.department_name", function(err, results) {
         
         // Loop through all of the departments and push them into the supervisorTableItems array

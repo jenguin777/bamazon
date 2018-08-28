@@ -140,7 +140,23 @@ where products.department_name = departments.department_name
 group by departments.department_name
 order by departments.department_name asc;
 
--- View Product Sales By Department Query on one line
+-- View Product Sales By Department Query on one line - too restrictive, doesn't handle newly added departments that have no products because Manager hasn't added them yet 
 select departments.department_id, departments.department_name, departments.overhead_costs, sum(products.product_sales) as product_sales_total, sum(products.product_sales) - departments.overhead_costs as total_profit FROM departments inner join products on TRIM(departments.department_name) = TRIM(products.department_name) where products.department_name = departments.department_name group by departments.department_name order by departments.department_name asc;
 
+-- Equivalent of full join, returns 11 rows, Sports and Outdoors duplicated, I know how to fix this in Oracle but the Oracle SQL 
+-- fix (4 table aliases, T2.department_name != T4.department name) doesn't work in mySQL.
+-- error is: Error Code: 1054. Unknown column 'T2.department_name' in 'on clause'	0.000 sec
+
+select departments.department_id, departments.department_name, departments.overhead_costs,   
+sum(products.product_sales) as product_sales_total,  sum(products.product_sales) - departments.overhead_costs as total_profit   
+FROM products   
+left join departments  on TRIM(departments.department_name) = TRIM(products.department_name)  
+UNION ALL select departments.department_id, departments.department_name, departments.overhead_costs,   
+sum(products.product_sales) as product_sales_total,  sum(products.product_sales) - departments.overhead_costs as total_profit   
+FROM products   right join departments   
+on TRIM(departments.department_name) = TRIM(products.department_name) 
+group by departments.department_name;
+
+--query for making the department list dynamic in Manager addNewProduct() after addeding Supervisor addNewDepartment
+select distinct(department_name) FROM departments order by department_name asc;
 
