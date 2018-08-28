@@ -33,7 +33,7 @@ Just run "npm install" in a terminal window after cloning the project. The requi
 You can use the DDL statements in bamazon.sql to create your own database and database objects.
 
 # Demo video
-Demo.mp4 is a video demo of the functionality.
+[Demo.mp4](https://github.com/jenguin777/bamazon/blob/master/Demo.mp4) is a video demo of the functionality.
 
 # License
 MIT license applies.
