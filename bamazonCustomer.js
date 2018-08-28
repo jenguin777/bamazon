@@ -116,7 +116,7 @@ function updateItem(selectedItemID,selectedItemQuantity) {
 
         if (selectedItemQuantity > fetchedItem.stock_quantity) {
             console.log("Sorry, there is insufficient quantity to fill this order.");
-            connection.end();
+            readAllItems();
             return;
         } else {
             console.log("Good news, you ordered " +  selectedItemQuantity + ". We have " + fetchedItem.stock_quantity + " available!\n");
