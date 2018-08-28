@@ -284,3 +284,29 @@ group by T4.department_name;
 
 
 select distinct(department_name) FROM departments order by department_name asc;
+
+-- *****************
+
+select departments.department_id, departments.department_name, departments.overhead_costs,   
+sum(products.product_sales) as product_sales_total,  sum(products.product_sales) - sum(departments.overhead_costs) as total_profit   
+FROM products   
+left join departments  on TRIM(departments.department_name) = TRIM(products.department_name);
+  
+-- 1	Sports and Outdoors	600.0000	8938.9600	-8761.0400
+  
+-- UNION ALL 
+
+select departments.department_id, departments.department_name, departments.overhead_costs,   
+sum(products.product_sales) as product_sales_total,  sum(products.product_sales) - sum(departments.overhead_costs) as total_profit   
+FROM products   right join departments   
+on TRIM(departments.department_name) = TRIM(products.department_name) 
+group by departments.department_name;
+
+-- Sports and Outdoors	600.0000	4225.6300	3625.6300
+
+Select * from products where department_name = "Sports and Outdoors";
+--                                           price      qty  product_sales
+-- 1	Schwinn Bike	Sports and Outdoors	400.0000	1	400.0000
+-- 2	Daggar Kayak	Sports and Outdoors	999.0000	1	2997.0000
+-- 3	Aquabound Kayak Paddle	Sports and Outdoors	135.0000	30	0.0000
+-- 24	bike helmet	Sports and Outdoors	75.3300	99	828.6300

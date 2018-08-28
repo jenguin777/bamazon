@@ -263,9 +263,7 @@ function addInventory() {
 
                 startMenu();
             });
-
         });
-
     });
 }
 
@@ -288,4 +286,5 @@ function printTable(items) {
     // Use console.table npm package to format and display products
     var table = managerTables.getTable(tableItemsArray);
     console.log(table);
+    console.log("\n");
 }
