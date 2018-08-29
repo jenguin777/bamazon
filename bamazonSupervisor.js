@@ -104,6 +104,7 @@ function addNewDepartment() {
         name: "overheadCosts",
         message: "Enter the starting overhead costs value for your new department:",
         validate: function(value) {
+            // ensure value entered is a number, need to investigate limiting the number of digits here
             if (isNaN(value) === false) {
               return true;
             }
@@ -174,7 +175,8 @@ function viewProductSalesByDepartment() {
                 deptID: results[i].department_id,
                 dept_Name: results[i].department_name,
                 overheadCosts: results[i].overhead_costs,
-                productSalesTotal: results[i].product_sales_total ? results[i].product_sales_total : "No Sales",
+                // return "No Sales" if there are no rows in the product table for a given department, needed for future modification, i.e., requires query update (outer or full join to include department rows for which no corresponding product rows exist)
+                productSalesTotal: results[i].product_sales_total ? results[i].product_sales_total : "No Sales",  
                 totalProfit: results[i].total_profit ? results[i].total_profit : "No Sales"
                 }
             );

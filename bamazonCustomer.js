@@ -49,6 +49,7 @@ function purchaseItems() {
             name: "Quantity",
             message: "Enter the quantity of the item you wish to purchase.",
             validate: function(value) {
+                // ensure value entered is a whole number
                 if (isNaN(value) === false && value % 1 === 0) {
                   return true;
                 }

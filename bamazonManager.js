@@ -89,7 +89,8 @@ function viewProducts() {
 
 function lowInventory() {
     console.log("Here's a list of all low quantity products (Quantity < 5):");
-
+    
+    // generate a dynamic list of departments for user to choose from
     connection.query("select item_id, product_name, department_name, round(price, 2) as price, stock_quantity FROM products where stock_quantity < 5 order by department_name asc", function(error, results) {
         if (error) throw error;
         
@@ -136,6 +137,7 @@ function addNewProduct() {
             name: "price",
             message: "Enter the price of your item:",
             validate: function(value) {
+                // ensure value is a number, need to investigate limiting # of digits here
                 if (isNaN(value) === false) {
                 return true;
                 }
@@ -147,6 +149,7 @@ function addNewProduct() {
             name: "quantity",
             message: "Enter the quantity of your item:",
             validate: function(value) {
+                // ensure value entered is a whole number
                 if (isNaN(value) === false && value % 1 === 0) {
                 return true;
                 }
@@ -216,6 +219,7 @@ function addInventory() {
                     name: "addAmount",
                     message: "Enter the quantity you wish to add for this product:",
                     validate: function(value) {
+                        // ensure value entered is a whole number
                         if (isNaN(value) === false && value % 1 === 0) {
                           return true;
                         }
