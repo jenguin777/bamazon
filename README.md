@@ -1,9 +1,9 @@
 # Bamazon
 An interactive Amazon-like storefront with 3 "views" (Customer, Manager, Supervisor) that can be run via node in a Terminal window.
 
-`bamazonCustomer.js`- running this application will first display the ids, names, departments, and prices of all products for sale. Then it will prompt the user to choose an item to order and enter a desired quantity. It will take in that order, check quantity in stock, and if there is enough in stock, it will deplete stock from the store's inventory. Then it will display the total cost of the order and new quantity in stock after the order.
+`node bamazonCustomer.js`- running this application will first display the ids, names, departments, and prices of all products for sale. Then it will prompt the user to choose an item to order and enter a desired quantity. It will take in that order, check quantity in stock, and if there is enough in stock, it will deplete stock from the store's inventory. Then it will display the total cost of the order and new quantity in stock after the order.
 
-`bamazonManager.js` - running this application will provide the following options for Managers:
+`node bamazonManager.js` - running this application will provide the following options for Managers:
 
     * View Products for Sale - lists item IDs, names, prices, and quantities for every available item.
     
@@ -13,7 +13,7 @@ An interactive Amazon-like storefront with 3 "views" (Customer, Manager, Supervi
     
     * Add New Product - allow the manager to add a completely new product to the store.
 
-`bamazonSupervisor.js` - running this application will provide the following options for Supervisors:
+`node bamazonSupervisor.js` - running this application will provide the following options for Supervisors:
 
     * View Product Sales by Department - lists the Department ID, Department Name, Overhead Costs, Product Sales, and Total Profit for each department.
    
